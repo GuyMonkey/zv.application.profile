@@ -4,7 +4,7 @@ sap.ui.define([
 	"use strict";
 
 	return Controller.extend("zv.application.profile.controller.Master", {
-		onPressListItem: function(oEvent){
+	onPressListItem: function(oEvent){
 			var oItem = oEvent.getSource();
 			console.log(oItem);
 			var oItemData = this.getView().getModel("oData").getProperty(oItem.getBindingContext("oData").getPath() + "/ProcessStepSet");
