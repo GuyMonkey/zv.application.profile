@@ -1,0 +1,20 @@
+<core:View controllerName="zv.template.masterdetail.controller.Detail" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:semantic="sap.m.semantic">
+	<semantic:DetailPage title="Details">
+		<semantic:content>
+			<ObjectHeader title="ObjectHeader"></ObjectHeader>
+			<IconTabBar class="sapUiResponsiveContentPadding">
+				<items>
+					<IconTabFilter icon="sap-icon://hint" tooltip="Tab 1"></IconTabFilter>
+					<IconTabFilter icon="sap-icon://attachment" tooltip="Tab 1"></IconTabFilter>
+				</items>
+			</IconTabBar>
+		</semantic:content>
+	</semantic:DetailPage>
+	
+	<Page title="Title">
+		<content>
+			<Text text="Text"></Text>
+		</content>
+	</Page>
+</core:View>

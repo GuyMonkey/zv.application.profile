@@ -1,0 +1,13 @@
+<mvc:View controllerName="zv.template.masterdetail.controller.App" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m">
+	
+	<SplitApp id="idApp"/>
+	
+	<!--
+	<SplitApp>
+		<masterPages></masterPages>
+		<detailPages></detailPages>
+	</SplitApp>
+	-->
+	
+</mvc:View>
