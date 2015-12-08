@@ -1,21 +1,25 @@
 <core:View controllerName="zv.application.profile.controller.Detail" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
-	xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:semantic="sap.m.semantic">
-
-	<semantic:DetailPage title="Details">
+	xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns="sap.m">
+	<semantic:DetailPage id="idProfile" title="{Profile>/ProfileText}">
+		<semantic:customHeaderContent>
+			<Button icon="sap-icon://action-settings" press="onPressSettings"></Button>
+		</semantic:customHeaderContent>
 		<semantic:content>
-			<ObjectHeader title="ObjectHeader"></ObjectHeader>
-			<IconTabBar class="sapUiResponsiveContentPadding">
+			<!--			<ObjectHeader title="ObjectHeader"></ObjectHeader> -->
+			<VBox id="idAreas" items="{Profile>/OPAreaSet/results}">
 				<items>
-					<IconTabFilter icon="sap-icon://hint" tooltip="Tab 1"></IconTabFilter>
-					<IconTabFilter icon="sap-icon://attachment" tooltip="Tab 1"></IconTabFilter>
+					<Panel headerText="{Profile>AreaText}">
+						<content>
+							<VBox visible="{= ${Profile>IsTable} === false }">
+								<Text text="(Felder)"></Text>
+							</VBox>
+							<VBox visible="{= ${Profile>IsTable} === true }">
+								<Text text="(Tabelle)"></Text>
+							</VBox>
+						</content>
+					</Panel>
 				</items>
-			</IconTabBar>
+			</VBox>
 		</semantic:content>
 	</semantic:DetailPage>
-	
-	<Page title="Title">
-		<content>
-			<Text text="Text"></Text>
-		</content>
-	</Page>
 </core:View>

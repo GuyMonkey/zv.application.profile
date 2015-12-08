@@ -100,7 +100,7 @@
 					]
 				},
 				{
-					"pattern": "DetailData/{id}",
+					"pattern": "DetailData/{objid}",
 					"name": "detail",
 					"target": [
 						"master",

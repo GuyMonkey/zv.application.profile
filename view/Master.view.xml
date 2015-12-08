@@ -1,7 +1,7 @@
 <core:View controllerName="zv.application.profile.controller.Master" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:semantic="sap.m.semantic">
 	
-	<semantic:MasterPage title="Liste">
+	<semantic:MasterPage title="{i18n>listHeader}">
 		<semantic:subHeader>
 			<Bar id="headerBar">
 				<contentMiddle>
@@ -11,7 +11,8 @@
 		</semantic:subHeader>
 		
 		<semantic:content>
-			<List growing="true" growingScrollToLoad="false" growingThreshold="10" growingTriggerText="Show more!" items="{oData>/ProcessSet}">
+			<List id="idSearchList" growing="true" growingScrollToLoad="true" growingThreshold="10" growingTriggerText="{i18n>showMore}" 
+					items="{path:'oData>/ObjectSet', filters: [{ path: 'Objtype', operator: 'EQ', value1: 'OT_COMPANY'}]}">
 				<items>
 					<ObjectListItem number="{oData>ExternalKey}" press="onPressListItem" title="{oData>Name}" type="Active"></ObjectListItem>
 				</items>
