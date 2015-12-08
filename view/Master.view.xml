@@ -1,4 +1,4 @@
-<core:View controllerName="zv.template.masterdetail.controller.Master" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
+<core:View controllerName="zv.application.profile.controller.Master" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:semantic="sap.m.semantic">
 	
 	<semantic:MasterPage title="Liste">

@@ -3,7 +3,7 @@ sap.ui.define([
 ], function(Controller) {
 	"use strict";
 
-	return Controller.extend("zv.template.masterdetail.controller.Master", {
+	return Controller.extend("zv.application.profile.controller.Master", {
 		onPressListItem: function(oEvent){
 			var oItem = oEvent.getSource();
 			console.log(oItem);

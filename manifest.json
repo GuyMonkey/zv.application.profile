@@ -80,7 +80,7 @@
 			"config": {
 				"routerClass": "sap.m.routing.Router",
 				"viewType": "XML",
-				"viewPath": "zv.template.masterdetail.view",
+				"viewPath": "zv.application.profile.view",
 				"controlId": "idApp",
 				"controlAggregation": "detailPages",
 				"bypassed": {
