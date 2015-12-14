@@ -1,19 +1,28 @@
 <core:View controllerName="zv.application.profile.controller.Detail" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns="sap.m">
-	<semantic:DetailPage id="idProfile" title="{Profile>/ProfileText}">
+	<semantic:DetailPage id="idProfile" title="{ProfileMeta>/ProfileText}">
 		<semantic:customHeaderContent>
 			<Button icon="sap-icon://action-settings" press="onPressSettings"></Button>
 		</semantic:customHeaderContent>
 		<semantic:content>
-			<!--			<ObjectHeader title="ObjectHeader"></ObjectHeader> -->
-			<VBox id="idAreas" items="{Profile>/OPAreaSet/results}">
+			<VBox id="idAreas" items="{ProfileMeta>/PAreaSet/results}">
 				<items>
-					<Panel headerText="{Profile>AreaText}">
+					<Panel headerText="{ProfileMeta>AreaText}">
 						<content>
-							<VBox visible="{= ${Profile>IsTable} === false }">
-								<Text text="(Felder)"></Text>
+							<VBox items="{ProfileMeta>PAAttributeSet/results}" visible="{= ${ProfileMeta>IsTable} === false }">
+								<items>
+									<HBox>
+										<items>
+											<Label text="{ProfileMeta>Text}"></Label>
+											<!-- <Text text="{path: 'ProfileMeta>', formatter: '.formatter.getFlatAreaValue'}" ></Text> -->
+											<!-- <Input value="{ProcessStepData>Value}" visible="{= ${ProcessStepData>Type} === 'IN' }" class="sapUiSmallMarginBottom"></Input> -->
+											<!-- <DatePicker visible="{= ${ProcessStepData>Type} === 'DT' }" value="{ProcessStepData>Value}" valueFormat="YYYYMMdd" class="sapUiSmallMarginBottom"></DatePicker> -->
+											<!-- <CheckBox selected="{ProcessStepData>Value}" visible="{= ${ProcessStepData>Type} === 'CB' }" class="sapUiSmallMarginBottom"></CheckBox> -->
+										</items>
+									</HBox>
+								</items>
 							</VBox>
-							<VBox visible="{= ${Profile>IsTable} === true }">
+							<VBox visible="{= ${ProfileMeta>IsTable} === true }">
 								<Text text="(Tabelle)"></Text>
 							</VBox>
 						</content>

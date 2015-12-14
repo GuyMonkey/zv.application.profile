@@ -1,11 +1,14 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
+	"zv/application/profile/model/formatter",
 	'sap/m/MessageBox'
-], function(Controller, MessageBox) {
+], function(Controller, formatter, MessageBox) {
 	"use strict";
 
 	return Controller.extend("zv.application.profile.controller.Detail", {
+		formatter: formatter,
 
+		_objtype: null,					// used objtype
 		_objid: null,					// selected object
 		_oObjectProfileSet: null,		// oData oProfileSet
 		_oProfileSettings: null,		// XMLViewFragment for profile selection
@@ -27,21 +30,38 @@ sap.ui.define([
 		// create JSON model for details
 		_initDetailsModel: function() {
 			var oModel = new sap.ui.model.json.JSONModel();
-			this.getView().setModel(oModel, "Profile");
+			this.getView().setModel(oModel, "ProfileData");
+			oModel = new sap.ui.model.json.JSONModel();
+			this.getView().setModel(oModel, "ProfileMeta");
 		},
 		// after navigation to details
 		_onPatternMatched: function(oEvent) {
 			this._objid = oEvent.getParameter("arguments").objid;
+			this._objtype = oEvent.getParameter("arguments").objtype;
 			this._loadProfileList();
 		},
 		// load a profile for an objid
 		_loadProfile: function(sProfileId) {
 			// odata-read ausführen mit expands
 			this.getView().byId("idProfile").setBusy(true);
-			this.getOwnerComponent().getModel("oData").read("/OProfileSet(Objid='" + this._objid + "',ProfileId='" + sProfileId + "')", {
-				"urlParameters": "$expand=OPActionSet,OPAreaSet,OPAreaSet",
+			this.getOwnerComponent().getModel("oData").read("/ProfileSet(Objtype='"+this._objtype+"',ProfileId='"+sProfileId+"')", {
+				"urlParameters": "$expand=PAreaSet,PActionSet,PAreaSet/PAAttributeSet",
 				"success": function(oData) {
-					this.getView().getModel("Profile").setData(oData);
+					console.log(oData);
+					this.getView().getModel("ProfileMeta").setData(oData);
+					this.getView().byId("idProfile").setBusy(false);
+
+				}.bind(this),
+				"error": function(oError) {
+					this.getView().byId("idProfile").setBusy(false);
+					this._messageError(oError);
+				}.bind(this)
+			});
+			
+/*			this.getOwnerComponent().getModel("oData").read("/ObjectSet('" + this._objid + "')", {
+				"urlParameters": "$expand=OProfileSet,OProfileSet/OPActionSet",
+				"success": function(oData) {
+					this.getView().getModel("ProfileMeta").setData(oData);
 					this.getView().byId("idProfile").setBusy(false);
 
 					console.log(oData);
@@ -50,17 +70,21 @@ sap.ui.define([
 					this.getView().byId("idProfile").setBusy(false);
 					this._messageError(oError);
 				}.bind(this)
-			});
-
+			}); */
 		},
-		// load list of profiles for selected objid
+		// load list of possible profiles for selected objid
 		_loadProfileList: function() {
-			// odata-read ausführen mit expands
-			this.getOwnerComponent().getModel("oData").read("/ObjectSet('" + this._objid + "')", {
-				"urlParameters": "$expand=OProfileSet,OProfileSet/OPActionSet",
+			this.getOwnerComponent().getModel("oData").read("/ProfileSet", {
+				"filters": [
+					new sap.ui.model.Filter({
+						path: "Objtype",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: this._objtype
+					})
+				],
 				"success": function(oData) {
 					this._oObjectProfileSet = oData;
-					this._loadProfile(oData.OProfileSet.results[0].ProfileId);	// load default_profile
+					this._loadProfile(oData.results[0].ProfileId);	// load default_profile
 				}.bind(this),
 				"error": function(oError) {
 					this._messageError(oError);
@@ -76,7 +100,7 @@ sap.ui.define([
 		},
 		// open profile selection
 		onPressSettings: function(oEvent) {
-			this._oProfileSettings.getModel("ProfileSet").setData(this._oObjectProfileSet.OProfileSet);
+			this._oProfileSettings.getModel("ProfileSet").setData(this._oObjectProfileSet);
 			this._oProfileSettings.openBy(oEvent.getSource());
 		},
 		// load selected profile
