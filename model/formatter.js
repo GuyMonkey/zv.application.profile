@@ -5,6 +5,16 @@ sap.ui.define([], function () {
 		// --------------------------------------------------
 		// OTHER
 		// --------------------------------------------------
+		
+		getAttributeValue: function(oData){
+			var oAttributeSet = this.getView().getModel("ProfileData").getProperty("/OAttributeSet/results");
+			for(var i = 0; i < oAttributeSet.length; i++){
+				if(oAttributeSet[i].Attribute === oData){
+					return oAttributeSet[i].Value;
+				}
+			}
+		},
+		
 		getFlatAreaValue: function(oData){
 			//return this.convertSMValueText(oData.Value, oData.Type);
 			 var sValue = "";
