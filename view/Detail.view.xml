@@ -6,46 +6,7 @@
 			<Button icon="sap-icon://action-settings" press="onPressSettings"></Button>
 		</semantic:customHeaderContent>
 		<semantic:content>
-			
-			<!--
-			<VBox id="idAreas" items="{ProfileMeta>/PAreaSet/results}">
-				<items>
-					<Label text="Text"></Label>
-				</items>
-			</VBox>
-			-->
-			<!--
-			<VBox id="idAreas" items="{ProfileMeta>/PAreaSet/results}">
-				<items>
-				
-				
-				
-					<Panel headerText="{ProfileMeta>AreaText}">
-						<content>
-							<VBox items="{ProfileMeta>PAAttributeSet/results}" visible="{= ${ProfileMeta>IsTable} === false }">
-								<items>
-									<HBox>
-										<items>
-											<Label text="{ProfileMeta>Text}"></Label>
-											<Text text="{path: 'ProfileMeta>Attribute', formatter: '.formatter.getAttributeValue'}" ></Text>
-											-->
-											<!-- <Input value="{ProcessStepData>Value}" visible="{= ${ProcessStepData>Type} === 'IN' }" class="sapUiSmallMarginBottom"></Input> -->
-											<!-- <DatePicker visible="{= ${ProcessStepData>Type} === 'DT' }" value="{ProcessStepData>Value}" valueFormat="YYYYMMdd" class="sapUiSmallMarginBottom"></DatePicker> -->
-											<!-- <CheckBox selected="{ProcessStepData>Value}" visible="{= ${ProcessStepData>Type} === 'CB' }" class="sapUiSmallMarginBottom"></CheckBox> -->
-										
-										<!--
-										</items>
-									</HBox>
-								</items>
-							</VBox>
-							<VBox visible="{= ${ProfileMeta>IsTable} === true }">
-								<Text text="(Tabelle)"></Text>
-							</VBox>
-						</content>
-					</Panel>
-				</items>
-			</VBox>
-			-->
+			<!-- Filled in Controller -->
 		</semantic:content>
 	</semantic:DetailPage>
 </core:View>

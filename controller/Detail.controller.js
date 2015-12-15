@@ -9,100 +9,154 @@ sap.ui.define([
 		formatter: formatter,
 
 		_objtype: null,					// used objtype
-		_objid: null,					// selected object
 		_oObjectProfileSet: null,		// oData oProfileSet
 		_oProfileSettings: null,		// XMLViewFragment for profile selection
+
 
 		onInit: function() {
 			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 			oRouter.getRoute("detail").attachPatternMatched(this._onPatternMatched, this);
-			this._initDetailsModel();
-			this._initProfileSettings();
 			
-			this._loadProfileList();
-		},
-		_messageError: function(oData){
-			console.log(oData);
+			this._initObjectDataModel();
 			
-			var oErrorBody = JSON.parse(oData.responseText);
-			//MessageToast.show(oErrorBody.error.message.value);
-			MessageBox.show(oErrorBody.error.message.value, sap.m.MessageBox.Icon.ERROR, "ERROR");
+			this._loadObjectProfile();
+			
+			//this._initProfileSettings();
+			//this._loadProfileList();
 		},
 		
-		// create JSON model for details
-		_initDetailsModel: function() {
-			var oModel = new sap.ui.model.json.JSONModel();
-			this.getView().setModel(oModel, "ProfileData");
-			oModel = new sap.ui.model.json.JSONModel();
-			this.getView().setModel(oModel, "ProfileMeta");
-		},
-		// after navigation to details
 		_onPatternMatched: function(oEvent) {
-			this._objid = oEvent.getParameter("arguments").objid;
-			this._objtype = oEvent.getParameter("arguments").objtype;
-			this._loadObjectData();
-			
+			//this._objtype = oEvent.getParameter("arguments").objtype;
+			this._loadObjectData(oEvent.getParameter("arguments").objid);
 		},
-		// load a profile for an objid
-		_loadProfile: function(sProfileId) {
-			// odata-read ausführen mit expands
-			this.getView().byId("idProfile").setBusy(true);
-			this.getOwnerComponent().getModel("oData").read("/ProfileSet(Objtype='"+this._objtype+"',ProfileId='"+sProfileId+"')", {
+		
+		_loadObjectData: function(sObjid){
+			this.getOwnerComponent().getModel("oData").read("/ObjectSet('" + sObjid + "')", {
+				"urlParameters": "$expand=OAttributeSet,OSubSet,OSubSet/OSAttributeSet",
+				"success": function(oData) {
+					console.log(oData);
+					
+					// OBJECT HEADER
+					this.getView().getModel("ObjectData").setProperty("/Objid", oData.Objid);
+					this.getView().getModel("ObjectData").setProperty("/Objtype", oData.Objtype);
+					this.getView().getModel("ObjectData").setProperty("/ExternalKey", oData.ExternalKey);
+					this.getView().getModel("ObjectData").setProperty("/Name", oData.Name);
+					
+					// OBJECT ATTRIBUTES
+					var oAttributes = {};
+					for(var i = 0; i < oData.OAttributeSet.results.length; i++){
+						oAttributes[oData.OAttributeSet.results[i].Attribute] = oData.OAttributeSet.results[i].Value;
+					}
+					this.getView().getModel("ObjectData").setProperty("/Attributes", oAttributes);
+					
+					// OBJECT SUBOBJECTS (WITH ATTRIBUTES)
+					var oLists = {};
+					for(var j = 0; j < oData.OSubSet.results.length; j++){
+						if(!oLists[oData.OSubSet.results[j].Type]){
+							oLists[oData.OSubSet.results[j].Type] = [];
+						}
+						
+						var oSAttributes = {};
+						for(var k = 0; k < oData.OSubSet.results[j].OSAttributeSet.results.length; k++){
+							oSAttributes[oData.OSubSet.results[j].OSAttributeSet.results[k].Attribute] = oData.OSubSet.results[j].OSAttributeSet.results[k].Value;
+						}
+						oLists[oData.OSubSet.results[j].Type].push(oSAttributes);
+					}
+					this.getView().getModel("ObjectData").setProperty("/Lists", oLists);
+					
+					console.log(this.getView().getModel("ObjectData").getData());
+				}.bind(this),
+				"error": function(oError) {
+					this.getView().byId("idProfile").setBusy(false);
+					this._messageError(oError);
+				}.bind(this)
+			});
+		},
+		
+		_loadObjectProfile: function(){
+			this.getOwnerComponent().getModel("oData").read("/ProfileSet(Objtype='OT_COMPANY',ProfileId='CIM_DEFAULT')", {
 				"urlParameters": "$expand=PAreaSet,PActionSet,PAreaSet/PAAttributeSet",
 				"success": function(oData) {
-					this.getView().getModel("ProfileMeta").setData(oData);
+					this._buildProfile(oData);
+				}.bind(this),
+				"error": function(oError) {
 					this.getView().byId("idProfile").setBusy(false);
-					
-			console.log("Build profile!");
-
+					this._messageError(oError);
+				}.bind(this)
+			});
+		},
+		
+		_buildProfile: function(oProfile){
+			console.log(oProfile);
+			
 			var oDetailPage = this.getView().byId("idProfile");
 			oDetailPage.destroyContent();
 			
-			var oVbox = new sap.m.VBox();
-			oDetailPage.addContent(oVbox);
-			//oDetailPage.addDependent(oVbox);
+			var oVboxProfile = new sap.m.VBox();
+			oVboxProfile.addItem(new sap.m.Text({text: "Objid: {ObjectData>/Objid}"}));
+			oVboxProfile.addItem(new sap.m.Text({text: "Objtype: {ObjectData>/Objtype}"}));
+			oVboxProfile.addItem(new sap.m.Text({text: "ExternalKey: {ObjectData>/ExternalKey}"}));
+			oVboxProfile.addItem(new sap.m.Text({text: "Name: {ObjectData>/Name}"}));
 			
-			
-			//oVbox.bindAggregation("items", "ProfileMeta>/PAreaSet/results ", new sap.m.Text({text: "Text"}));
-			//oVbox.addItem(new sap.m.Text({text: "Text"}));
-			
-			
-			oVbox.bindAggregation("items", "ProfileMeta>/PAreaSet/results", function(sId, oContext){
-				//console.log(oContext);
-				return new sap.m.Text({text: "{ProfileData>/OAttributeSet(Objid='" + this._objid + "',Attribute='NAME')/Value}"});
-			}.bind(this));
-			
-			//oVbox.setModel(this.getView().getModel("ProfileMeta"));
-			
-			//console.log(oVbox);
-			console.log("Build profile end!");
-
-
+			var oVboxAreas = new sap.m.VBox();
+			for(var i = 0; i < oProfile.PAreaSet.results.length; i++){
+				var oProfileArea = oProfile.PAreaSet.results[i];
+				
+				if(oProfileArea.ProfileAreaType){
+					var oContent = null;
+					var sVisible = true;
+					if(oProfileArea.IsTable === false){
+						var oVboxTmp = new sap.m.VBox(); // Should be grid in future ...
+						for(var j = 0; j < oProfileArea.PAAttributeSet.results.length; j++){
+							oVboxTmp.addItem(new sap.m.Text({ text: oProfileArea.PAAttributeSet.results[j].Text + ": {ObjectData>/Attributes/" + oProfileArea.PAAttributeSet.results[j].Attribute + "}" }));
+						}
+						oContent = oVboxTmp;
+					}else{
+						var aColumns = [];
+						var aCells = [];
+						
+						//sVisible = "{= ${ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "} !== '' }"
+						//sVisible = "{= ${ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "} !== '' }";
+						
+						for(var k = 0; k < oProfileArea.PAAttributeSet.results.length; k++){
+							var oAttribute = oProfileArea.PAAttributeSet.results[k];
+							aColumns.push(new sap.m.Column({ header: new sap.m.Label({text: oAttribute.Text})}));
+							aCells.push(new sap.m.Text({ text: "{ObjectData>" + oAttribute.Attribute + "}" }));
+						}
+						
+						var oTable = new sap.m.Table({columns: aColumns});
+						oTable.bindItems("ObjectData>/Lists/" + oProfileArea.ProfileAreaType, new sap.m.ColumnListItem({
+							cells : aCells
+						}));
+						
+						oContent = oTable;
+					}
 					
-//					this._buildProfile();
-				}.bind(this),
-				"error": function(oError) {
-					this.getView().byId("idProfile").setBusy(false);
-					this._messageError(oError);
-				}.bind(this)
-			});
+					oVboxAreas.addItem(new sap.m.Panel({
+						headerText: oProfileArea.AreaText,
+						content: [ oContent ],
+						visible: sVisible
+					}));
+					
+					//oVboxAreas.addItem(new sap.m.Text({text: "{ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "/0/EXTERNAL_KEY}"}));
+				}
+			}
+			oVboxProfile.addItem(oVboxAreas);
+			
+			oDetailPage.addContent(oVboxProfile);
+		},
+
+		_messageError: function(oData){
+			var oErrorBody = JSON.parse(oData.responseText);
+			MessageBox.show(oErrorBody.error.message.value, sap.m.MessageBox.Icon.ERROR, "ERROR");
 		},
 		
-		_loadObjectData: function(){
-			this.getOwnerComponent().getModel("oData").read("/ObjectSet('" + this._objid + "')", {
-				"urlParameters": "$expand=OAttributeSet",
-				"success": function(oData) {
-//					console.log(oData);
-					this.getView().getModel("ProfileData").setData(oData);
-				}.bind(this),
-				"error": function(oError) {
-					this.getView().byId("idProfile").setBusy(false);
-					this._messageError(oError);
-				}.bind(this)
-			});
-		},
-		
-		// load list of possible profiles for selected objid
+		_initObjectDataModel: function() {
+			var oModel = new sap.ui.model.json.JSONModel();
+			this.getView().setModel(oModel, "ObjectData");
+		}
+
+		/*
 		_loadProfileList: function() {
 			this.getOwnerComponent().getModel("oData").read("/ProfileSet", {
 				"filters": [
@@ -121,48 +175,23 @@ sap.ui.define([
 				}.bind(this)
 			});
 		},
-		// build profile selection view fragment
+		
 		_initProfileSettings: function() {
 			var oModel = new sap.ui.model.json.JSONModel();
 			this._oProfileSettings = sap.ui.xmlfragment("zv.application.profile.view.ProfileSettings", this);
 			this._oProfileSettings.setModel(oModel, "ProfileSet");
 			this.getView().addDependent(this._actionSheetTransitions);
 		},
-		
-		_buildProfile: function(){
-			console.log("Build profile!");
 
-			var oDetailPage = this.getView().byId("idProfile");
-			
-			oDetailPage.destroyContent();
-			
-			var oVbox = new sap.m.VBox();
-			oDetailPage.addContent(oVbox);
-			oDetailPage.addDependent(oVbox);
-			
-			
-			//oVbox.bindAggregation("items", "ProfileMeta>/PAreaSet/results ", new sap.m.Text({text: "Text"}));
-			//oVbox.addItem(new sap.m.Text({text: "Text"}));
-			
-			oVbox.bindAggregation("items", "ProfileMeta>/PAreaSet/results ", function(sId, oContext){
-				console.log("Test");
-				return new sap.m.Text({text: "Text"});
-			});
-			
-			console.log("Build profile end!");
-		},
-		
-		// open profile selection
 		onPressSettings: function(oEvent) {
 			this._oProfileSettings.getModel("ProfileSet").setData(this._oObjectProfileSet);
 			this._oProfileSettings.openBy(oEvent.getSource());
 		},
-		// load selected profile
+
 		onPressProfileSelect: function(oEvent) {
 			var oProfile = oEvent.getSource().getModel("ProfileSet").getProperty(oEvent.getSource().getBindingContext("ProfileSet").getPath());
 			this._loadProfile(oProfile.ProfileId);
 		}
-
+		*/
 	});
-
 });
