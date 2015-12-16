@@ -90,6 +90,7 @@ sap.ui.define([
 		_buildProfile: function(oProfile){
 			var oDetailPage = this.getView().byId("idProfile");
 			oDetailPage.destroyContent();
+			oDetailPage.setTitle(oProfile.ProfileText);
 			
 			oDetailPage.addContent(new sap.m.ObjectHeader({
 				title: "{ObjectData>/Name}",
