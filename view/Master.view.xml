@@ -14,11 +14,7 @@
 			<List id="idSearchList" growing="true" growingScrollToLoad="true" growingThreshold="10" growingTriggerText="{i18n>showMore}" 
 					items="{path:'oData>/ObjectSet', filters: [{ path: 'Objtype', operator: 'EQ', value1: 'OT_COMPANY'}]}">
 				<items>
-					
 					<StandardListItem title="{oData>Name}" description="{oData>ExternalKey}" type="Active" press="onPressListItem"/>
-					<!--
-					<ObjectListItem number="{oData>ExternalKey}" press="onPressListItem" title="{oData>Name}" type="Active"></ObjectListItem>
-					-->
 				</items>
 			</List>
 		</semantic:content>

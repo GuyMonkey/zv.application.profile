@@ -31,10 +31,12 @@ sap.ui.define([
 		},
 		
 		_loadObjectData: function(sObjid){
+			this.getView().byId("idProfile").setBusy(true);
+			
 			this.getOwnerComponent().getModel("oData").read("/ObjectSet('" + sObjid + "')", {
 				"urlParameters": "$expand=OAttributeSet,OSubSet,OSubSet/OSAttributeSet",
 				"success": function(oData) {
-					console.log(oData);
+					//console.log(oData);
 					
 					// OBJECT HEADER
 					this.getView().getModel("ObjectData").setProperty("/Objid", oData.Objid);
@@ -65,7 +67,8 @@ sap.ui.define([
 					}
 					this.getView().getModel("ObjectData").setProperty("/Lists", oLists);
 					
-					console.log(this.getView().getModel("ObjectData").getData());
+					this.getView().byId("idProfile").setBusy(false);
+					//console.log(this.getView().getModel("ObjectData").getData());
 				}.bind(this),
 				"error": function(oError) {
 					this.getView().byId("idProfile").setBusy(false);
@@ -107,12 +110,38 @@ sap.ui.define([
 				if(oProfileArea.ProfileAreaType){
 					var oContent = null;
 					var sVisible = true;
+					
 					if(oProfileArea.IsTable === false){
+						var oGrid = new sap.ui.layout.Grid({
+							defaultSpan: "XL12 L12 M12 S12",
+							defaultIndent: "XL0 L0 M0 S0",
+							hSpacing: 0,
+							position: "Left"
+						});
+						
+						for(var j = 0; j < oProfileArea.PAAttributeSet.results.length; j++){
+							oGrid.addContent(
+								new sap.m.Text({
+									text: oProfileArea.PAAttributeSet.results[j].Text + ":"
+								}).setLayoutData(new sap.ui.layout.GridData({ span: "XL3 L3 M6 S12" }))
+							);
+							
+							oGrid.addContent(
+								new sap.m.Text({
+									text: "{ObjectData>/Attributes/" + oProfileArea.PAAttributeSet.results[j].Attribute + "}"
+								}).setLayoutData(new sap.ui.layout.GridData({ span: "XL3 L3 M6 S12" }))
+							);
+						}
+						oContent = oGrid;
+						
+						
+						/*
 						var oVboxTmp = new sap.m.VBox(); // Should be grid in future ...
 						for(var j = 0; j < oProfileArea.PAAttributeSet.results.length; j++){
 							oVboxTmp.addItem(new sap.m.Text({ text: oProfileArea.PAAttributeSet.results[j].Text + ": {ObjectData>/Attributes/" + oProfileArea.PAAttributeSet.results[j].Attribute + "}" }));
 						}
 						oContent = oVboxTmp;
+						*/
 					}else{
 						var aColumns = [];
 						var aCells = [];

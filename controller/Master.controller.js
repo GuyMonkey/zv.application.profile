@@ -7,12 +7,25 @@ sap.ui.define([
 
 		cObjtype: "OT_COMPANY",
 
+		onInit: function(){
+			
+			this.byId("idSearchList").attachEventOnce("updateFinished",
+				function() {
+					var oFirstListItem = this.byId("idSearchList").getItems()[0];
+					if (oFirstListItem) {
+						var oItemData = this.getView().getModel("oData").getProperty( oFirstListItem.getBindingContext("oData").getPath());
+						var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+						oRouter.navTo("detail", { objtype: oItemData.Objtype, objid: oItemData.Objid });
+					}
+				}.bind(this)
+			);
+		},
+
 		onPressListItem: function(oEvent) {
 			var oItem = oEvent.getSource();
 			var oItemData = this.getView().getModel("oData").getProperty( oItem.getBindingContext("oData").getPath());
 			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-			oRouter.navTo("detail", { objtype: oItemData.Objtype,
-									  objid: oItemData.Objid });
+			oRouter.navTo("detail", { objtype: oItemData.Objtype, objid: oItemData.Objid });
 		},
 		onSearch: function(oEvent) {
 			var query = oEvent.getParameter("query");

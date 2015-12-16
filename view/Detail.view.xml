@@ -1,7 +1,7 @@
 <core:View controllerName="zv.application.profile.controller.Detail" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns="sap.m">
 	
-	<semantic:DetailPage id="idProfile" title="Profile">
+	<semantic:DetailPage id="idProfile" title="Profile" busy="true" busyIndicatorDelay="0">
 		<semantic:customHeaderContent>
 			<Button icon="sap-icon://action-settings" press="onPressSettings"></Button>
 		</semantic:customHeaderContent>
