@@ -19,10 +19,11 @@ sap.ui.define([
 			
 			this._initObjectDataModel();
 			
-			this._loadObjectProfile();
+			this._initProfileSettings();
+			this._loadProfileList();
 			
-			//this._initProfileSettings();
-			//this._loadProfileList();
+			//this._loadObjectProfile("CIM_DEFAULT");
+			
 		},
 		
 		_onPatternMatched: function(oEvent) {
@@ -77,8 +78,8 @@ sap.ui.define([
 			});
 		},
 		
-		_loadObjectProfile: function(){
-			this.getOwnerComponent().getModel("oData").read("/ProfileSet(Objtype='OT_COMPANY',ProfileId='CIM_DEFAULT')", {
+		_loadObjectProfile: function(sProfileId){
+			this.getOwnerComponent().getModel("oData").read("/ProfileSet(Objtype='OT_COMPANY',ProfileId='" + sProfileId + "')", {
 				"urlParameters": "$expand=PAreaSet,PActionSet,PAreaSet/PAAttributeSet",
 				"success": function(oData) {
 					this._buildProfile(oData);
@@ -179,9 +180,15 @@ sap.ui.define([
 		_initObjectDataModel: function() {
 			var oModel = new sap.ui.model.json.JSONModel();
 			this.getView().setModel(oModel, "ObjectData");
-		}
+		},
 
-		/*
+		_initProfileSettings: function() {
+			var oModel = new sap.ui.model.json.JSONModel();
+			this._oProfileSettings = sap.ui.xmlfragment("zv.application.profile.view.ProfileSettings", this);
+			this._oProfileSettings.setModel(oModel, "ProfileSet");
+			this.getView().addDependent(this._actionSheetTransitions);
+		},
+
 		_loadProfileList: function() {
 			this.getOwnerComponent().getModel("oData").read("/ProfileSet", {
 				"filters": [
@@ -193,19 +200,12 @@ sap.ui.define([
 				],
 				"success": function(oData) {
 					this._oObjectProfileSet = oData;
-					this._loadProfile(oData.results[0].ProfileId);	// load default_profile
+					this._loadObjectProfile(oData.results[0].ProfileId);	// load default_profile
 				}.bind(this),
 				"error": function(oError) {
 					this._messageError(oError);
 				}.bind(this)
 			});
-		},
-		
-		_initProfileSettings: function() {
-			var oModel = new sap.ui.model.json.JSONModel();
-			this._oProfileSettings = sap.ui.xmlfragment("zv.application.profile.view.ProfileSettings", this);
-			this._oProfileSettings.setModel(oModel, "ProfileSet");
-			this.getView().addDependent(this._actionSheetTransitions);
 		},
 
 		onPressSettings: function(oEvent) {
@@ -215,8 +215,8 @@ sap.ui.define([
 
 		onPressProfileSelect: function(oEvent) {
 			var oProfile = oEvent.getSource().getModel("ProfileSet").getProperty(oEvent.getSource().getBindingContext("ProfileSet").getPath());
-			this._loadProfile(oProfile.ProfileId);
+			this._loadObjectProfile(oProfile.ProfileId);
 		}
-		*/
+		
 	});
 });
