@@ -88,18 +88,18 @@ sap.ui.define([
 		},
 		
 		_buildProfile: function(oProfile){
-			console.log(oProfile);
-			
 			var oDetailPage = this.getView().byId("idProfile");
 			oDetailPage.destroyContent();
 			
-			var oVboxProfile = new sap.m.VBox();
-			oVboxProfile.addItem(new sap.m.Text({text: "Objid: {ObjectData>/Objid}"}));
-			oVboxProfile.addItem(new sap.m.Text({text: "Objtype: {ObjectData>/Objtype}"}));
-			oVboxProfile.addItem(new sap.m.Text({text: "ExternalKey: {ObjectData>/ExternalKey}"}));
-			oVboxProfile.addItem(new sap.m.Text({text: "Name: {ObjectData>/Name}"}));
+			oDetailPage.addContent(new sap.m.ObjectHeader({
+				title: "{ObjectData>/Name}",
+				number: "{ObjectData>/ExternalKey}",
+				attributes: [
+					new sap.m.ObjectAttribute({ title: "Objid", text: "{ObjectData>/Objid}" }),
+					new sap.m.ObjectAttribute({ title: "Objtype", text: "{ObjectData>/Objtype}" })
+				]
+			}));
 			
-			var oVboxAreas = new sap.m.VBox();
 			for(var i = 0; i < oProfile.PAreaSet.results.length; i++){
 				var oProfileArea = oProfile.PAreaSet.results[i];
 				
@@ -128,22 +128,17 @@ sap.ui.define([
 						oTable.bindItems("ObjectData>/Lists/" + oProfileArea.ProfileAreaType, new sap.m.ColumnListItem({
 							cells : aCells
 						}));
-						
 						oContent = oTable;
 					}
 					
-					oVboxAreas.addItem(new sap.m.Panel({
+					oDetailPage.addContent(new sap.m.Panel({
 						headerText: oProfileArea.AreaText,
 						content: [ oContent ],
-						visible: sVisible
-					}));
-					
-					//oVboxAreas.addItem(new sap.m.Text({text: "Area has data: {= ${ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "} ? 'true' : 'false' }" }));
+						visible: sVisible,
+						width: "auto"
+					}).addStyleClass("sapUiResponsiveMargin"));
 				}
 			}
-			oVboxProfile.addItem(oVboxAreas);
-			
-			oDetailPage.addContent(oVboxProfile);
 		},
 
 		_messageError: function(oData){
