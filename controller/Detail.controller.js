@@ -41,6 +41,7 @@ sap.ui.define([
 					this.getView().getModel("ObjectData").setProperty("/Objtype", oData.Objtype);
 					this.getView().getModel("ObjectData").setProperty("/ExternalKey", oData.ExternalKey);
 					this.getView().getModel("ObjectData").setProperty("/Name", oData.Name);
+					this.getView().getModel("ObjectData").setProperty("/Visible", false);
 					
 					// OBJECT ATTRIBUTES
 					var oAttributes = {};
@@ -115,8 +116,7 @@ sap.ui.define([
 						var aColumns = [];
 						var aCells = [];
 						
-						//sVisible = "{= ${ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "} !== '' }"
-						//sVisible = "{= ${ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "} !== '' }";
+						sVisible = "{= ${ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "} ? true : false }";
 						
 						for(var k = 0; k < oProfileArea.PAAttributeSet.results.length; k++){
 							var oAttribute = oProfileArea.PAAttributeSet.results[k];
@@ -138,7 +138,7 @@ sap.ui.define([
 						visible: sVisible
 					}));
 					
-					//oVboxAreas.addItem(new sap.m.Text({text: "{ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "/0/EXTERNAL_KEY}"}));
+					//oVboxAreas.addItem(new sap.m.Text({text: "Area has data: {= ${ObjectData>/Lists/" + oProfileArea.ProfileAreaType + "} ? 'true' : 'false' }" }));
 				}
 			}
 			oVboxProfile.addItem(oVboxAreas);
