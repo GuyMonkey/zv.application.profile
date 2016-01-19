@@ -8,7 +8,7 @@ sap.ui.define([
 	return Controller.extend("zv.application.profile.controller.Detail", {
 		formatter: formatter,
 
-		_objtype: null,					// used objtype
+//		_objtype: null,					// used objtype
 		_oObjectProfileSet: null,		// oData oProfileSet
 		_oProfileSettings: null,		// XMLViewFragment for profile selection
 
@@ -21,9 +21,7 @@ sap.ui.define([
 			
 			this._initProfileSettings();
 			this._loadProfileList();
-			
-			//this._loadObjectProfile("CIM_DEFAULT");
-			
+
 		},
 		
 		_onPatternMatched: function(oEvent) {
